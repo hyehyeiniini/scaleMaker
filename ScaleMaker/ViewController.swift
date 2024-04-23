@@ -50,7 +50,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
     }
-
+    
+    // MARK: - UI 관련 설정
     func configureUI(){
         // 버튼 둥글게 처리
         getTitleButton.layer.cornerRadius = 5
@@ -68,6 +69,7 @@ class ViewController: UIViewController {
         // 버튼 타이틀 설정
         playButton.setTitle("Play", for: .normal)
         
+        // 음계 동그라미 모양 설정
         for i in 0...6 {
             guard let view = notes[i] else { return }
             view.clipsToBounds = true
@@ -75,8 +77,9 @@ class ViewController: UIViewController {
         }
     }
     
-    
+    // MARK: - 입력 버튼 눌렀을 때 처리
     @IBAction func getTitleButtonTapped(_ sender: UIButton) {
+        // 아무것도 입력하지 않았을 때 경고문구 띄우기
         if titleTextField.text == "" {
             warningLabel.textColor = .red
             warningLabel.text = "제목을 한 글자 이상 입력하세요."
@@ -85,50 +88,67 @@ class ViewController: UIViewController {
         songTitleLabel.text = titleTextField.text
     }
     
-    
+    // MARK: - 슬라이더 눌렀을 때 처리
     @IBAction func sliderChanged(_ sender: UISlider) {
         tempo = sender.value
     }
     
+    // MARK: - 시작 버튼 눌렀을 때 처리
     @IBAction func playButtonTapped(_ sender: UIButton) {
+        // 시작 -> 정지 버튼으로
         if shouldPlay == true{
             timer?.invalidate()
+            
+            // 슬라이더 비활성화
             slider.isEnabled = false
+            // 버튼 타이틀 변경
             playButton.setTitle("Stop", for: .normal)
             
             var notesIndex = 0
             var prevNotesIndex: Int?
             self.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(tempo), repeats: true) { [self] _ in
+                // 재생해야 할 음계 설정 -> tempo 간격으로 변화
                 notesIndex %= 7
+                
+                // 음계 재생
                 playNotes(idx: notesIndex)
+                
+                // UI 관련 설정
                 notes[notesIndex]!.backgroundColor = colorPalette[notesIndex]
                 if let prevNotesIndex = prevNotesIndex {
                     notes[prevNotesIndex]!.backgroundColor = .systemGray2
                 }
+                
+                // 인덱스 설정
                 prevNotesIndex = notesIndex
                 notesIndex += 1
             }
             shouldPlay.toggle()
             
-        } else {
+        } 
+        // 정지 -> 시작 버튼으로
+        else {
             timer?.invalidate()
             
+            // 슬라이더 활성화 및 초기화
             slider.isEnabled = true
+            slider.setValue(0.5, animated: true)
+            
+            // 버튼 타이틀 변경
             playButton.setTitle("Play", for: .normal)
+            
+            // 음계 색 초기화
             for i in 0...6 {
                 notes[i]?.backgroundColor = .systemGray2
             }
-            
-            slider.setValue(0.5, animated: true)
-            
             shouldPlay.toggle()
         }
         
     }
 
+    // MARK: - 소리 재생하는 코드
     func playNotes(idx: Int) {
-        guard let path = Bundle.main.path(forResource: "FX_piano_\(idx)", ofType:"mp3") else {
-            return }
+        guard let path = Bundle.main.path(forResource: "FX_piano_\(idx)", ofType:"mp3") else { return }
         let url = URL(fileURLWithPath: path)
 
         do {
@@ -146,6 +166,7 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - 텍스트필드 델리게이트 설정
 extension ViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField.text == "" && string == " " {
