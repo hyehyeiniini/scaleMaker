@@ -17,8 +17,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var getTitleButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
-    var shouldPlay = true
-    
+ 
     @IBOutlet weak var slider: UISlider!
     
     @IBOutlet weak var topStackView: UIStackView!
@@ -34,9 +33,11 @@ class ViewController: UIViewController {
     
     weak var timer: Timer?
     var player: AVAudioPlayer?
-    
     var tempo: Float = 1.0
-    lazy var notes = [viewC, viewD, viewE, viewF, viewG, viewA, viewB]
+    var shouldPlay = true
+    
+    // 🤨 궁금한 사항 - > notes: [UIView]로 적어도 되는가?
+    lazy var notes = [viewC, viewD, viewE, viewF, viewG, viewA, viewB] 
     let colorPalette = [UIColor(red: 0.94, green: 0.62, blue: 0.65, alpha: 1.00),
                         UIColor(red: 0.96, green: 0.79, blue: 0.58, alpha: 1.00),
                         UIColor(red: 0.98, green: 0.98, blue: 0.75, alpha: 1.00),
